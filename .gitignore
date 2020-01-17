@@ -1,0 +1,4 @@
+node_modules/
+frontend/dist/
+dist/
+\.DS_Store

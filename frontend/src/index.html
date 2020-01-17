@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>RektAlert</title>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'sha256-h0Xwz42hrykkHyjVlIt665Bwt8makBCYMVBKhDpTrCs=' 'sha256-FOBOZjOKFNxh3TUiH/1G/MDZ35VUxrTN7nhqNPK5/v4=' 'sha256-5Lq8O/MAi9ISNePUbNp9EFL96Sp1qCaqtc/QkQKO4bQ='">
+  </head>
+  <body>
+    <style>
+      @font-face {
+        font-family: 'font_regular';
+        src: url('fonts/OpenSans-Regular-webfont.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      body {
+        font-family: 'font_regular';
+      }
+    </style>
+
+    <script>
+      window.Polymer = { rootPath: '/ui/' };
+    </script>
+
+    <script>
+      require('./ra-app.js');
+    </script>
+
+    <script>
+      if (require('electron-is-dev')) {
+        require('electron-connect').client.create();
+      }
+    </script>
+
+    <ra-app></ra-app>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "rektalert-app-frontent",
+  "version": "1.0.0",
+  "main": "index.html",
+  "author": "trading_peter",
+  "license": "Apache 2.0",
+  "private": false,
+  "flat": true,
+  "dependencies": {
+    "@polymer/iron-icon": "^3.0.1",
+    "@polymer/iron-iconset-svg": "^3.0.1",
+    "lit-element": "^2.2.1"
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "name": "RektAlert",
+  "version": "1.0.0",
+  "description": "Get Telegram notifications if orders are filled. Compatible with the FTX Crypto Derivatives Exchange.",
+  "main": "backend/dist/main.js",
+  "repository": "https://github.com/pkaske/rektalert-app.git",
+  "author": "trading_peter",
+  "license": "Apache 2.0",
+  "private": false,
+  "scripts": {
+    "start": "gulp serve",
+    "dev": "gulp dev",
+    "build": "gulp build-prod",
+    "publish-linux": "gulp build-prod && electron-builder -l -p always",
+    "publish-win": "gulp build-prod && electron-builder -w -p always",
+    "publish-macos": "gulp build-prod && electron-builder -m -p always",
+    "licenses": "node ./compile-license-list.js",
+    "licenses-json": "npx license-checker --production --json > licenses_backend.json && npx license-checker --production --json --start ./frontend > licenses_frontend.json",
+    "gen-icons": "./node_modules/.bin/electron-icon-maker --input=./resources/icon.png --output=./resources"
+  },
+  "postinstall": "electron-builder install-app-deps",
+  "build": {
+    "appId": "trading.peter.rektalert",
+    "productName": "RektAlert",
+    "artifactName": "rektalert-${version}.${ext}",
+    "generateUpdatesFilesForAllChannels": true,
+    "publish": {
+      "provider": "generic",
+      "url": "https://autoupdate.codeblob.work/"
+    },
+    "files": [
+      "frontend/dist/**/*",
+      "backend/dist/*",
+      "node_modules/**/*",
+      "resources/icons/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "buildResources": "resources"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "rektalert-${version}.${ext}"
+    },
+    "win": {
+      "icon": "resources/icons/win/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "asarUnpack": [
+        "node_modules/node-notifier/vendor/**"
+      ]
+    },
+    "linux": {
+      "category": "Office",
+      "icon": "resources/icons/png",
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "asarUnpack": [
+        "node_modules/node-notifier/vendor/**"
+      ]
+    },
+    "appImage": {
+      "license": "license.txt",
+      "artifactName": "rektalert-${version}-${arch}.${ext}"
+    }
+  },
+  "devDependencies": {
+    "electron": "^7.1.9",
+    "electron-builder": "^22.2.0",
+    "electron-connect": "^0.6.3",
+    "electron-icon-maker": "^0.0.4",
+    "eslint": "^6.8.0",
+    "gulp": "^4.0.2",
+    "rollup": "^1.29.0",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-conditional": "^3.1.2",
+    "rollup-plugin-copy-glob": "^0.3.1",
+    "rollup-plugin-json": "^4.0.0",
+    "rollup-plugin-minify-es": "^1.1.1",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "uglify-es": "^3.3.9",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10",
+    "webpack-node-externals": "^1.7.2",
+    "webpack-stream": "^5.2.1"
+  },
+  "dependencies": {
+    "electron-debug": "^3.0.1",
+    "electron-is-dev": "^1.1.0",
+    "electron-log": "^4.0.3",
+    "electron-store": "^5.1.0",
+    "electron-window-state": "^5.0.3",
+    "ftx-api-ws": "pkaske/ftx-api-ws#node_compat",
+    "keytar": "^5.0.0",
+    "node-telegram-bot-api": "^0.40.0",
+    "secure-random-password": "^0.2.1",
+    "semver": "^7.1.1"
+  }
+}
