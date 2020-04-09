@@ -18,6 +18,8 @@ class RaApp extends LitElement {
   render() {
     const tgIsSetup = Boolean(this._tgToken);
     const selAcc = this._selAccount || {};
+    const accBybit = this._accounts.bybit;
+    const accFTX = this._accounts.ftx;
 
     return html`
       <style>
@@ -207,9 +209,9 @@ class RaApp extends LitElement {
         <section>
           <h2 class="horizontal">
             <div>FTX Accounts</div>
-            <button class="rounded" @click=${() => this._addAccount()}>Add</button>
+            <button class="rounded" @click=${() => this._addAccount('ftx')}>Add</button>
           </h2>
-          ${this._accounts.map(acc => html`
+          ${accFTX.map(acc => html`
             <div class="account horizontal">
               <div>
                 Account: ${acc.subaccount ? acc.subaccount : 'Main'}
@@ -221,12 +223,33 @@ class RaApp extends LitElement {
             </div>
           `)}
   
-          ${this._accounts.length === 0 ? html`
+          ${accFTX.length === 0 ? html`
+            <p>No Account Added Yet</p>
+          ` : null}
+        </section>
+
+        <section>
+          <h2 class="horizontal">
+            <div>Bybit Accounts</div>
+            <button class="rounded" @click=${() => this._addAccount('bybit')}>Add</button>
+          </h2>
+          ${accBybit.map(acc => html`
+            <div class="account horizontal">
+              <div>
+                Key: ${this._formatApiKey(acc)}
+              </div>
+              <button class="rounded icon-like" @click=${() => this._confirmDeleteAccount(acc)}>X</button>
+            </div>
+          `)}
+  
+          ${accBybit.length === 0 ? html`
             <p>No Account Added Yet</p>
           ` : null}
         </section>
   
         <dialog id="editAccountDialog">
+          <input type="hidden" name="exchange" .value=${selAcc.exchange || 'ftx'}>
+
           <h3>Edit Account</h3>
           <div class="control-box">
             <label>API Key</label>
@@ -238,10 +261,12 @@ class RaApp extends LitElement {
             <input type="password" name="secret" .value=${selAcc.secret || ''} required>
           </div>
   
-          <div class="control-box">
-            <label>Subaccount (leave empty for main account)</label>
-            <input type="text" name="subaccount" .value=${selAcc.subaccount || ''}>
-          </div>
+          ${selAcc.exchange === 'ftx' ? html`
+            <div class="control-box">
+              <label>Subaccount (leave empty for main account)</label>
+              <input type="text" name="subaccount" .value=${selAcc.subaccount || ''}>
+            </div>
+          ` : null}
           
           <div class="buttons horizontal">
             <button class="rounded" @click=${() => this._closeEditDialog()}>Cancel</button>
@@ -255,7 +280,7 @@ class RaApp extends LitElement {
   
           <div class="buttons horizontal">
             <button class="rounded" @click=${() => this._closeDialog('confirmDeleteAccountDialog')}>Cancel</button>
-            <button class="rounded" @click=${() => this._deleteAccount()}>Yes, Delete!</button>
+            <button class="rounded" @click=${() => this._deleteAccount(selAcc.exchange || 'ftx')}>Yes, Delete!</button>
           </div>
         </dialog>
       </div>
@@ -278,7 +303,7 @@ class RaApp extends LitElement {
       _tgToken: { type: String },
       _showTgSetup: { type: Boolean },
       _hasChatId: { type: Boolean },
-      _accounts: { type: Array },
+      _accounts: { type: Object },
       _selAccIdx: { type: Number },
       _needsRestart: { type: Boolean },
       _version: { type: String }
@@ -291,7 +316,12 @@ class RaApp extends LitElement {
     this._config = Config;
     this._tgToken = this._config.get('telegram.token');
     this._hasChatId = Boolean(this._config.get('telegram.chatId'));
-    this._accounts = Config.get('ftx') || [];
+
+    this._accounts = {
+      ftx: Config.get('ftx') || [],
+      bybit: Config.get('bybit') || []
+    };
+
     this._version = version;
   }
 
@@ -321,8 +351,8 @@ class RaApp extends LitElement {
     this._showTgSetup = true;
   }
 
-  _addAccount() {
-    this._selAccount = {};
+  _addAccount(exchange) {
+    this._selAccount = { exchange };
     this.shadowRoot.querySelector('#editAccountDialog').showModal();
   }
 
@@ -341,22 +371,24 @@ class RaApp extends LitElement {
     });
 
     if (failed) return;
+
+    const exchange = values['exchange'];
     
     if (typeof this._selAccIdx === 'number') {
-      this._accounts[this._selAccIdx] = values;
+      this._accounts[exchange][this._selAccIdx] = values;
     } else {
-      this._accounts.push(values);
+      this._accounts[exchange].push(values);
     }
 
     this._closeEditDialog();
-    this._config.set('ftx', this._accounts);
+    this._config.set(exchange, this._accounts[exchange]);
     this._needsRestart = true;
     this.requestUpdate('_accounts');
   }
   
-  _deleteAccount() {
-    this._accounts = this._accounts.filter(acc => acc.key !== this._selAccount.key);
-    this._config.set('ftx', this._accounts);
+  _deleteAccount(exchange) {
+    this._accounts[exchange] = this._accounts[exchange].filter(acc => acc.key !== this._selAccount.key);
+    this._config.set(exchange, this._accounts[exchange]);
     this._needsRestart = true;
     this._closeDialog('confirmDeleteAccountDialog')
   }
