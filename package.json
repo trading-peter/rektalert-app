@@ -2,7 +2,7 @@
   "name": "RektAlert",
   "version": "1.0.1",
   "description": "Get Telegram notifications if orders are filled. Compatible with the FTX Crypto Derivatives Exchange.",
-  "main": "backend/dist/main.js",
+  "main": "backend/src/main.js",
   "repository": "https://github.com/pkaske/rektalert-app.git",
   "author": "trading_peter",
   "license": "Apache 2.0",
