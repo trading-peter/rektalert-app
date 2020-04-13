@@ -57,6 +57,9 @@
         "node_modules/node-notifier/vendor/**"
       ]
     },
+    "mac": {
+      "icon": "resources/icons/mac/icon.icns"
+    },
     "linux": {
       "category": "Office",
       "icon": "resources/icons/png",
